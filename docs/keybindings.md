@@ -55,7 +55,7 @@ Each action takes a list of keys. Setting an action replaces its whole list.
 |---|---|---|
 | `accept` | `return`, `kp_enter` | Pick the selected entry |
 | `accept_custom` | `ctrl-return` | Use the typed text and ignore the selection (`run`: run exactly what you typed) |
-| `accept_alt` | `shift-return` | Alternate action: `run` in a terminal, `drun` new instance, clipboard flips `paste_on_select`; Lua modes get `ctx.alt = true` |
+| `accept_alt` | `shift-return` | Alternate action: `run` in a terminal, `drun` new window (or just focus, never a second process), clipboard flips `paste_on_select`; Lua modes get `ctx.alt = true` |
 | `cancel` | `escape`, `ctrl-g`, `ctrl-[` | Close |
 | `next` / `prev` | `down`, `ctrl-n`, `ctrl-j`, `tab` / `up`, `ctrl-p`, `ctrl-k`, `shift-tab` | Move the selection |
 | `page_next` / `page_prev` | `pagedown` / `pageup` | Move a page |

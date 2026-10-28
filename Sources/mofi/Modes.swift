@@ -42,10 +42,29 @@ final class DrunMode: Mode {
         return apps.enumerated().map { Entry($1.name, icon: .file($1.path), key: $0) }
     }
 
+    /// Asks a running, scriptable app for a new window so alt-accept doesn't
+    /// spawn a second process (and a second Dock icon) per launch.
+    private static func newWindow(bundleID: String) -> Bool {
+        for verb in ["new window", "make new window"] {
+            var err: NSDictionary?
+            NSAppleScript(source: "tell application id \"\(bundleID)\" to \(verb)")?.executeAndReturnError(&err)
+            if err == nil { return true }
+        }
+        return false
+    }
+
     func accept(_ entry: Entry?, query: String, alt: Bool) -> ModeResult {
         guard let e = entry else { return .ignore }
+        let url = URL(fileURLWithPath: apps[e.key].path)
+        if alt, let bid = Bundle(url: url)?.bundleIdentifier,
+           let running = NSRunningApplication.runningApplications(withBundleIdentifier: bid).first {
+            // Never fork a second process of an app that is already running:
+            // single-process apps (Ghostty, ...) that don't script "new window"
+            // would otherwise pile up one Dock icon per press.
+            if !Self.newWindow(bundleID: bid) { running.activate() }
+            return .close("")
+        }
         let conf = NSWorkspace.OpenConfiguration()
-        conf.createsNewApplicationInstance = alt
         NSWorkspace.shared.openApplication(at: URL(fileURLWithPath: apps[e.key].path), configuration: conf) { _, err in
             if let err { log("launch failed: \(err.localizedDescription)") }
         }

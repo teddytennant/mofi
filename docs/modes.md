@@ -4,7 +4,7 @@ A mode is a list of entries plus what happens when you pick one. Open one with `
 
 | Mode | Lists | <kbd>enter</kbd> | <kbd>shift</kbd>+<kbd>enter</kbd> |
 |---|---|---|---|
-| `drun` | Installed apps | Launch / focus | Launch a new instance |
+| `drun` | Installed apps | Launch / focus | Open a new window |
 | `run` | Executables on `PATH` | Run (typed text works too) | Run in a terminal |
 | `clipboard` | Clipboard history | Copy back to the clipboard | Copy + paste (or the reverse of `paste_on_select`) |
 | `ssh` | Hosts from `~/.ssh/config` and `known_hosts` | `ssh host` in a terminal | — |
