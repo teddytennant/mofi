@@ -219,7 +219,16 @@ function mofi.terminal_command(cmd)
     local bin = "/Applications/Alacritty.app/Contents/MacOS/alacritty"
     return bin .. " msg create-window -e /bin/sh -c " .. q .. " 2>/dev/null || open -na Alacritty --args -e /bin/sh -c " .. q
   elseif exists("/Applications/Ghostty.app") then
-    return "open -na Ghostty --args -e /bin/sh -c " .. q
+    -- Ghostty is single-process: `open -n` would spawn a whole new app (and Dock icon) per
+    -- call, so ask the running instance for a window and only launch it when it isn't up.
+    local script = 'tell application "Ghostty"\n' ..
+      'set cfg to new surface configuration\n' ..
+      'set command of cfg to ' .. applescript_string("/bin/sh -c " .. q) .. '\n' ..
+      'new window with configuration cfg\n' ..
+      'activate\n' ..
+      'end tell'
+    return "if pgrep -xq ghostty; then osascript -e " .. mofi.quote(script) ..
+      "; else open -na Ghostty --args -e /bin/sh -c " .. q .. "; fi"
   elseif exists("/Applications/kitty.app") then
     return "open -na kitty --args /bin/sh -c " .. q
   elseif exists("/Applications/WezTerm.app") then
